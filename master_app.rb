@@ -29,13 +29,13 @@ class MasterApp
     end
   end
 
-  def watch_for_failing_master
+  def watch_for_failing_active
     watcher_callback = Zookeeper::Callbacks::WatcherCallback.create do |callback_object|
       callback_object = ZookeeperClientWatcherCallback.new(callback_object)
 
       if callback_object.node_deleted?(MASTER_NODE)
         result = register_as_active
-        watch_for_failing_master unless result
+        watch_for_failing_active unless result
       end
     end
 
