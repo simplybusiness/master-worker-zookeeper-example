@@ -10,7 +10,13 @@ class MasterApp
 
   def initialize
     self.mode = :not_connected
+
+    watch_for_failing_active unless register_as_active
   end
+
+  private
+
+  attr_writer :mode
 
   def register_as_active
     result = create_ephemeral_node(MASTER_NODE, Process.pid)
@@ -39,10 +45,6 @@ class MasterApp
     # inside the `ZookeeperClient` module, by creating the method `zk_stat_node`
     zookeeper_client.stat(path: MASTER_NODE, watcher: watcher_callback)
   end
-
-  private
-
-  attr_writer :mode
 
   def create_ephemeral_node(node, data)
     zk_create_node(path: node, data: data.to_s, ephemeral: true)

@@ -8,8 +8,7 @@
 require_relative 'master_app'
 
 master_app = MasterApp.new
-result = master_app.register_as_active
-master_app.watch_for_failing_active unless result
+
 while true
   sleep 3
   puts "I am #{master_app.mode} master"
