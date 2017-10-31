@@ -1,19 +1,15 @@
-require 'zookeeper'
-require 'zookeeper_client_configuration'
-require 'zookeeper_client_api_result'
-require 'zookeeper_client_watcher_callback'
+require_relative 'zookeeper_client'
+require_relative 'zookeeper_client_watcher_callback'
 
 class MasterApp
   MASTER_NODE = '/master'
+
+  include ZookeeperClient
 
   attr_reader :mode
 
   def initialize
     self.mode = :not_connected
-  end
-
-  def connect_to_zk
-    @zookeeper_client = Zookeeper.new(zookeeper_client_configuration.servers)
   end
 
   def register_as_active
@@ -39,19 +35,16 @@ class MasterApp
       end
     end
 
+    # TODO: Catch Error here? Think about wrapping call to ZookeeperClientApiResult and maybe put this
+    # inside the `ZookeeperClient` module, by creating the method `zk_stat_node`
     zookeeper_client.stat(path: MASTER_NODE, watcher: watcher_callback)
   end
 
   private
 
-  attr_reader :zookeeper_client
   attr_writer :mode
 
-  def zookeeper_client_configuration
-    ZookeeperClientConfiguration.instance
-  end
-
   def create_ephemeral_node(node, data)
-    ZookeeperClientApiResult.new(zookeeper_client.create(path: node, data: data.to_s, ephemeral: true))
+    zk_create_node(path: node, data: data.to_s, ephemeral: true)
   end
 end

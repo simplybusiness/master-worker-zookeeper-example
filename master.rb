@@ -5,12 +5,9 @@
 
 # ... rest of the functionality will be described later on ...
 
-$LOAD_PATH.unshift('.')
-
-require 'master_app'
+require_relative 'master_app'
 
 master_app = MasterApp.new
-master_app.connect_to_zk
 result = master_app.register_as_active
 master_app.watch_for_failing_active unless result
 while true
